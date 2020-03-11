@@ -10,9 +10,9 @@
 
 # check raspberry pi version
 readonly MODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model | sed 's/.*/\U&/')
-readonly NAME=$($MODEL | cut -d' ' -f 1,2 | sed 's/ //')
-readonly VERSION=$($MODEL | cut -d' ' -f 3,5 | sed 's/ //')
-readonly REVISION=$($MODEL | cut -d' ' -f 7)
+readonly NAME=$(echo $MODEL | cut -d' ' -f 1,2 | sed 's/ //')
+readonly VERSION=$(echo $MODEL | cut -d' ' -f 3,5 | sed 's/ //')
+readonly REVISION=$(echo $MODEL | cut -d' ' -f 7)
 
 if [[ "$NAME" != "RASPBERRYPI" && "$VERSION" != "4B" ]]; then
   echo "Only compatible with Raspberry Pi 4B !"
