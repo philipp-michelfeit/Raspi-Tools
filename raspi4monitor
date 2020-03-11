@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
 #########################################################################
-## Script: raspi4temps                                                                                                                                            ##
-## Purpose: Monitor the ARM CPU and GPU temperature of Raspberry Pi 4B                                            ##
-## Author: Philipp Michelfeit                                                                                                                                  ##
-## License: GPL v3                                                                                                                                                   ##
+## Script: raspi4temps                                                 ##
+## Purpose: Monitor the ARM CPU and GPU temperature of Raspberry Pi 4B ##
+## Author: Philipp Michelfeit                                          ##
+## License: GPL v3                                                     ##
 #########################################################################
 
 # temperature constants
