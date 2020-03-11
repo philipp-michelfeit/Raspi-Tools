@@ -4,12 +4,26 @@
 ## Script: raspi4temps                                                 ##
 ## Purpose: Monitor the ARM CPU and GPU temperature of Raspberry Pi 4B ##
 ## Author: Philipp Michelfeit                                          ##
+## Version: 1.0                                                        ##
 ## License: GPL v3                                                     ##
 #########################################################################
 
+# check raspberry pi version
+readonly MODEL=$(tr -d '\0' </sys/firmware/devicetree/base/model | sed 's/.*/\U&/')
+readonly NAME=$($MODEL | cut -d' ' -f 1,2 | sed 's/ //')
+readonly VERSION=$($MODEL | cut -d' ' -f 3,5 | sed 's/ //')
+readonly REVISION=$($MODEL | cut -d' ' -f 7)
+
+if [[ "$NAME" != "RASPBERRYPI" && "$VERSION" != "4B" ]]; then
+  echo "Only compatible with Raspberry Pi 4B !"
+  echo "Exiting program ..."
+  exit 1
+fi
+
 # temperature constants
-readonly OVERTEMPERATURE=80
-readonly WARNING=70
+readonly OVERTEMPERATURE_2=85 # cpu automatically gets throttled
+readonly OVERTEMPERATURE_1=80 # cpu automatically gets throttled
+readonly WARNING=75
 
 # color functions
 green() {
@@ -26,12 +40,14 @@ echo -e "\\033[31;1m${@}\033[0m"
 
 colorscale() {
   local temp=$1
-  if [ $temp -ge $OVERTEMPERATURE ]; then 
-    red $temp 
+  if [ $temp -ge $OVERTEMPERATURE_2 ]; then 
+    red $temp
+  elif [ $temp -ge $OVERTEMPERATURE_1 ]; then 
+    red $temp
   elif [ $temp -ge $WARNING ]; then 
-    yellow $1
+    yellow $temp
   else
-    green $1
+    green $temp
   fi
 }
 
@@ -52,7 +68,7 @@ do
   soc_temp=$(vcgencmd measure_temp | cut -d= -f2 | cut -d\' -f1 | cut -d. -f1)
 
   cpu_clock=$[$(vcgencmd measure_clock core | cut -d= -f2) / 1000 / 1000 ]
-  cpu_voltage=$(vcgencmd measure_volts core | sed s/V$// | sed s/^volt=//) 
+  cpu_voltage=$(vcgencmd measure_volts core | sed 's/V$//' | sed 's/^volt=//') 
 
   gpu_clock=$[$(vcgencmd measure_clock v3d | cut -d= -f2) / 1000 / 1000 ]
 
